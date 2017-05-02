@@ -2,8 +2,9 @@ package MazeSolver;
 
 /**
  * Solves the maze that is generated.
+ * Use of a recursive algorithm to solve the maze that is generated. 
  * @author Theresa Bultinck
- *
+ * 
  */
 public class Solver {
 	
@@ -46,17 +47,67 @@ public class Solver {
 		return 0;
 	}
 	
+	/**
+	 * 
+	 * @param x coordinate horizontally
+	 * @param y coordinate vertically
+	 * @return true if the maze is ended and we are at the exit position 
+	 * and false if the maze hasn't been solved
+	 */
 	private boolean solveMazeRecursively(int x, int y){
-		if(y == exit){
+		boolean ended = false;
+		
+		if(y == exit && x >= grid.length-1){
+			ended = true;
+			grid[exit][grid.length-1] = 'P'; //p = path
 			return true;
+		} else {
+			grid[y][x] = 'V'; //v = visited
 		}
-		if(grid[y-1][x] == ' ')//step up
-			solveMazeRecursively(x,y-2); 
-		if(grid[y+1][x] == ' ') //step down
-			solveMazeRecursively(y+2,x); 
-		if(grid[y][x+1] == ' ') //step right
-			solveMazeRecursively(x+2,y); 
-		if(grid[y][x-1] == ' ') //step left
-			solveMazeRecursively(x-2,y); 
+		if(!ended && grid[y-1][x] == ' '){//step up
+			grid[y][x] = 'V';
+			grid[y-1][x] = 'V';
+			solveMazeRecursively(x,y-2);
+			if(ended){
+				grid[y][x] = 'P';
+				grid[y-1][x] = 'P';
+				if(y-2 >= 0)
+					grid[y-2][x] = 'P';
+			}
+		}
+		if(!ended && grid[y+1][x] == ' '){ //step down
+			grid[y][x] = 'V';
+			grid[y+1][x] = 'V';
+			ended = solveMazeRecursively(y+2,x);
+			if (ended){
+				grid[y][x] = 'P';
+				grid[y+1][x] = 'P';
+				if(y+2 >= grid.length-1)
+					grid[y+2][x] = 'P';
+			}
+		}
+		if(!ended && grid[y][x+1] == ' '){//step right
+			grid[y][x] = 'V';
+			grid[y][x+1] = 'V';
+			ended = solveMazeRecursively(x+2,y);
+			if(ended){
+				grid[y][x] = 'P';
+				grid[y][x+1] = 'P';
+				if (x+2 <= grid.length-1)
+					 grid[y][x+2] = 'P';
+			}
+		} 
+		if(!ended && grid[y][x-1] == ' ') {//step left
+			grid[y][x] = 'V';
+			grid[y][x-1] = 'V';
+			ended = solveMazeRecursively(x-2,y);
+			if (ended){
+				grid[y][x] = 'P';
+				grid[y][x-2] = 'P';
+				if (x-2>=0)
+					grid[y][x-1] = 'P';
+			}
+		}
+		return ended; 
 	}
 }
