@@ -2,7 +2,14 @@ package MazeSolver;
 
 /**
  * Solves the maze that is generated.
- * Use of a recursive algorithm to solve the maze that is generated. 
+ * Explanation: 
+ * It is a breadth-first search algorithm, but if the if-structures step right and step left were placed 
+ * before step up and step down (which isn't the case) then it would be a depth-first search algorithm.
+ * In this algorithm (especially the method solveMazeRecursively) you look around for open (free) places in the maze
+ * and these free places you assign to 'V' from visited. You continue this until you've found the end of the maze.
+ * Then you run back to the beginning and you walk the correct path and there you put 'P' from path. 
+ * The algorithm is just like a tree that consists of nodes (places in the maze) and you have to traverse the tree
+ * searching for the right leaf by following a path. 
  * @author Theresa Bultinck
  * 
  */
@@ -17,8 +24,10 @@ public class Solver {
 	}
 	
 	public char[][] solveMaze(){
-		solveMazeRecursively(0,searchEntry());
-		return null;
+		int start = searchEntry();
+		grid[start][0] = 'P';
+		solveMazeRecursively(1,start);
+		return grid;
 	}
 	
 	/**
@@ -58,7 +67,7 @@ public class Solver {
 		boolean ended = false;
 		
 		if(y == exit && x >= grid.length-1){
-			ended = true;
+			ended = true; //true if he has found the exit
 			grid[exit][grid.length-1] = 'P'; //p = path
 			return true;
 		} else {
@@ -67,7 +76,7 @@ public class Solver {
 		if(!ended && grid[y-1][x] == ' '){//step up
 			grid[y][x] = 'V';
 			grid[y-1][x] = 'V';
-			solveMazeRecursively(x,y-2);
+			ended = solveMazeRecursively(x,y-2);
 			if(ended){
 				grid[y][x] = 'P';
 				grid[y-1][x] = 'P';
@@ -78,7 +87,7 @@ public class Solver {
 		if(!ended && grid[y+1][x] == ' '){ //step down
 			grid[y][x] = 'V';
 			grid[y+1][x] = 'V';
-			ended = solveMazeRecursively(y+2,x);
+			ended = solveMazeRecursively(x,y+2);
 			if (ended){
 				grid[y][x] = 'P';
 				grid[y+1][x] = 'P';
